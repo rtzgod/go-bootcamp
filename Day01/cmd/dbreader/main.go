@@ -4,15 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/rtzgod/go-bootcamp/Day01/internal"
-	"github.com/rtzgod/go-bootcamp/Day01/models"
-	"os"
-	"path/filepath"
 )
-
-type DBReader interface {
-	Parse(data []byte) (*models.Recipe, error)
-	Print()
-}
 
 func main() {
 	var path string
@@ -22,32 +14,20 @@ func main() {
 	flag.Parse()
 
 	// Чтение данных из файла
-	data, err := os.ReadFile(path)
+	data, err := internal.ReadFiles(path)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
 	}
 
 	// хз как назвать
-	reader := NewDBReader(path)
+	reader := internal.NewDBReader(path)
 
-
-	if _, err := reader.Parse(data); err != nil {
+	recipe, err := reader.Parse(data[0])
+	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
 	}
-	reader.Print()
-}
 
-func NewDBReader(path string) DBReader {
-	fileExtension := filepath.Ext(path)
-
-	switch fileExtension {
-	case ".xml":
-		return internal.NewXMLReader()
-	case ".json":
-		return internal.NewJSONReader()
-	default:
-		return nil
-	}
+	reader.Print(recipe)
 }
